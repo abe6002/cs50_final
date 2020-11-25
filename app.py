@@ -6,11 +6,13 @@ from werkzeug.security import check_password_hash, generate_password_hash
 #Configure Application
 app = Flask(__name__)
 
+#configure database: #TODO
+
 #load secret key
 app.config.from_object('config.Config')
 
 
-#Dashboard
+#Dashboard - #TODO
 @app.route("/")
 #@login_required - not for testing purposes
 def dashboard():
@@ -50,6 +52,27 @@ def login():
     #if user reachs login via GET
     else:
         return render_template("login.html")
+
+#Create Event #TODO
+"""@app.route("/event", methods=["GET", "POST"])
+def event():
+
+    if request.method == "POST":
+
+        if not request.form.get("event_name"):
+            return None
+
+        if no items on item form:
+            return None
+
+        add event to event table
+
+
+
+    
+
+    else:
+        return render_template("create_event.html")"""
 
         
 
