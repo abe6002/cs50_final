@@ -1,21 +1,27 @@
 import os
 
 from flask import Flask, flash, jsonify, redirect, render_template, request, session
+from flask_session import Session
 from werkzeug.security import check_password_hash, generate_password_hash
+from helpers import login_required
 
 #Configure Application
 app = Flask(__name__)
 
-#configure database: #TODO
-
-#load secret key
+#load config.py
 app.config.from_object('config.Config')
 
+#configure session
+session = Session()
+session.init_app(app)
+
+#configure database: #TODO
 
 #Dashboard - #TODO
 @app.route("/")
-#@login_required - not for testing purposes
+@login_required
 def dashboard():
+
     return render_template("layout.html")
 
 
@@ -29,7 +35,7 @@ def login():
     if request.method == "POST":
 
         #ensure username was submitted
-        if not request.form.get("user_name"):
+        if not request.form.get("username"):
             return None
 
         #ensure password was submitted
