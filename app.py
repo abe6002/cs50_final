@@ -12,8 +12,8 @@ app = Flask(__name__)
 app.config.from_object('config.Config')
 
 #configure session
-session = Session()
-session.init_app(app)
+sess = Session()
+sess.init_app(app)
 
 #configure database: #TODO
 
