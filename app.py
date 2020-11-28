@@ -1,4 +1,6 @@
 import os
+import re
+import qrcode
 
 from flask import Flask, flash, jsonify, redirect, render_template, request, session
 from flask_session import Session
@@ -58,6 +60,55 @@ def login():
     #if user reachs login via GET
     else:
         return render_template("login.html")
+
+#Register - registers user to use website
+@app.route("/register", methods=["GET", "POST"])
+def register():
+
+    if request.method == "POST":
+
+        #ensure username, email, password, confirm password was submitted
+        if not request.form.get("username") or not request.form.get("email") or not request.form.get("password") or not request.form.get("conf_password"):
+            return None
+
+        #ensures passwords match
+        if not request.form.get("password") == request.form.get("conf_password"):
+
+        #set variables, ensure email is in approximate email format
+        username = request.form.get("username")
+        email = request.form.get("email")
+        if not re.match(r"[^@]+@[^@]+\.[^@]+", email):
+            return None
+
+        #query database for usernames and emails
+        #TODO
+
+        #if username or email exists, return error
+        if not len(rows) == 0:
+            return None
+
+        #now that we've ensured UI is being used correctly and that the user or email doesn't already exist, we can register the account
+
+        #salt password
+        unsalted_pass = request.form.get("password")
+        password = generate_password_hash(unsalted_pass, method='pbkdf2:sha256', salt_length=8)
+
+        #create unique QR code:
+        qr = qrcode.QRCode(version=1, box_size=10, border=5)
+        qr.add_data(username)
+        qr.make(fit=True)
+        img = qr.make_image(fill='black', back_color='white')
+        img.save('./static/qr_codes/qrcode_{username}.png')   
+
+        #open user data base
+        #insert variables into respective columns
+        
+
+
+    
+    else:
+        return render_template("register.html")
+
 
 #Create Event #TODO
 """@app.route("/event", methods=["GET", "POST"])
