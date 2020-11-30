@@ -87,11 +87,14 @@ def register():
         if not re.match(r"[^@]+@[^@]+\.[^@]+", email):
             return render_template("error.html", error="your email is not a valid format.")
 
-        #query database for usernames and emails
-        #TODO
+        #create cursor for query
+        cur = mysql.connection.cursor()
 
+        #query database for usernames and emails
+        rows = cur.execute("SELECT * FROM user WHERE %s OR %s", [username], [email])
+        
         #if username or email exists, return error
-        if not len(rows) == 0:
+        if not rows == 0:
             return render_template("error.html", error="this username or email already exists.")
 
         #now that we've ensured UI is being used correctly and that the user or email doesn't already exist, we can register the account
@@ -108,12 +111,9 @@ def register():
         location = './static/qr_codes/qrcode_{username}.png'
         img.save(location)   
 
-        #open user data base
-        #insert variables into respective columns
+        #open user data base and update database with user fields
+        cur.execute("INSERT INTO user (username, password, email, QR_Code) VALUES %s, %s, %s, %s", [username], [password], [email], [location])
         
-
-
-    
     else:
         return render_template("register.html")
 
