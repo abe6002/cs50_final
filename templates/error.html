@@ -1,0 +1,14 @@
+<!--
+    Error:
+    -returns error
+-->
+
+{% extends "layout.html" %}
+{% block title %}
+    Error
+{% endblock %}
+
+{% block main %}
+    <h1>There was an error.</h1>
+    <h2>It appears that {{ error }}</h2>
+{% endblock %}

@@ -4,6 +4,7 @@ import qrcode
 
 from flask import Flask, flash, jsonify, redirect, render_template, request, session
 from flask_session import Session
+from flask_mysqldb import MySQL
 from werkzeug.security import check_password_hash, generate_password_hash
 from helpers import login_required
 
@@ -17,7 +18,8 @@ app.config.from_object('config.Config')
 sess = Session()
 sess.init_app(app)
 
-#configure database: #TODO
+#configure database:
+mysql = MySQL(app)
 
 #Dashboard - #TODO
 @app.route("/")
@@ -38,18 +40,18 @@ def login():
 
         #ensure username was submitted
         if not request.form.get("username"):
-            return None
+            return render_template("error.html", error="there was no username entered.")
 
         #ensure password was submitted
         elif not request.form.get("password"):
-            return None
+            return render_template("error.html", error="there was no password entered.")
         
         #query database for username
         #rows = #TODO
         
         #ensures username exists and password matches input
         if len(rows) != 1 or not check_password_hash(rows[0]["hash"], request.form.get("password")):
-            return None
+            return render_template("error.html", error="this username or password is incorrect.")
 
         #creating a session for the user
         session["user_id"] = rows[0]["id"]
@@ -69,23 +71,24 @@ def register():
 
         #ensure username, email, password, confirm password was submitted
         if not request.form.get("username") or not request.form.get("email") or not request.form.get("password") or not request.form.get("conf_password"):
-            return None
+            return render_template("error.html", error="you did not enter a required piece of info.")
 
         #ensures passwords match
         if not request.form.get("password") == request.form.get("conf_password"):
+            return render_template("error.html", error="your passwords do not match.")
 
         #set variables, ensure email is in approximate email format
         username = request.form.get("username")
         email = request.form.get("email")
         if not re.match(r"[^@]+@[^@]+\.[^@]+", email):
-            return None
+            return render_template("error.html", error="your email is not a valid format.")
 
         #query database for usernames and emails
         #TODO
 
         #if username or email exists, return error
         if not len(rows) == 0:
-            return None
+            return render_template("error.html", error="this username or email already exists.")
 
         #now that we've ensured UI is being used correctly and that the user or email doesn't already exist, we can register the account
 
