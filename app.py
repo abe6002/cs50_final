@@ -46,11 +46,15 @@ def login():
         elif not request.form.get("password"):
             return render_template("error.html", error="there was no password entered.")
         
+        #create cursor
+        cur = mysql.connection.cursor()
+        
         #query database for username
-        #rows = #TODO
+        username = request.form.get("username")
+        rows = cur.execute("SELECT * FROM user WHERE %s", [username])
         
         #ensures username exists and password matches input
-        if len(rows) != 1 or not check_password_hash(rows[0]["hash"], request.form.get("password")):
+        if rows != 1 or not check_password_hash(rows[0]["hash"], request.form.get("password")):
             return render_template("error.html", error="this username or password is incorrect.")
 
         #creating a session for the user
@@ -101,7 +105,8 @@ def register():
         qr.add_data(username)
         qr.make(fit=True)
         img = qr.make_image(fill='black', back_color='white')
-        img.save('./static/qr_codes/qrcode_{username}.png')   
+        location = './static/qr_codes/qrcode_{username}.png'
+        img.save(location)   
 
         #open user data base
         #insert variables into respective columns
